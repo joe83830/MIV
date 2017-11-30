@@ -6,16 +6,20 @@ version: 2
 jobs:
   build:
     docker:
-      version: 17.10.0-ce
+      # version: 17.10.0-ce
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      
       - image: circleci/python:3.6.1
+        environment: 
+            TEST_DATABASE_URL: mongodb://test:test@ds119446.mlab.com:19446/circlecitest
+      - image: circleci/mongo:3.4      
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/repo
+      # working_directory: ~/repo
 
     steps:
       - checkout
@@ -40,13 +44,13 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements.txt" }}
         
       # run tests!
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            python manage.py test
+     
+     #- run:
+      #    name: run tests
+       #   command: |
+        #    . venv/bin/activate
+         #   python manage.py test
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-           
+     # - store_artifacts:
+      #    path: test-reports
+       #   destination: test-reports   
