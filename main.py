@@ -16,13 +16,21 @@ client = MongoClient(MONGODB_URI, connectTimeoutMS=30000)
 db = client.joesecretcloset
 hail = db.Hailers
 drive = db.Drivers
+job = db.Jobs
+
+
+
+if job.count() == 0:
+    n = 0
+
+else:
+    cur = job.find_one(sort=[("jobID", -1)])
+    n = cur['jobID'] + 1
 
     # Magical annotations define URL routing via the Flask application
 
 @app.route('/')
 def home_page():
-        # online_users = mongo.db.user.find({'Name': 'Joe'})
-        # docs = list(online_users)
 
     temp = []
     cursor = hail.find()
@@ -31,10 +39,6 @@ def home_page():
         
     return dumps(temp)
 
-# @app.route('/add/<phone>', methods = ['POST'])
-# def check_num_exist(phone):
-	# names.append(username)
-	# return '{} added'.format(username)
 
 @app.route('/phone', methods = ['POST'])
 def checknum():
@@ -42,11 +46,6 @@ def checknum():
     num = request.form['num']
 
     return dumps(num)
-    # if num == '12345':
-    #     return dumps('true')
-
-    # else:
-    #     return dumps('false')
 
 
 @app.route('/add', methods = ['POST'])
@@ -54,9 +53,12 @@ def checknum():
 def addrec():
 
     d = request.get_json()
+    d['jobID'] = []
     hail.insert_one(d)
+
     
     return dumps(0)
+
 
 @app.route('/checkpasswd', methods = ['POST'])
 
@@ -67,7 +69,7 @@ def auth():
     username = d['Username']
     password = d['Password']
     
-    cursor = hail.find({"username":username})
+    cursor = hail.find({"Username":username})
 
     for doc in cursor:
         tempdict = doc
@@ -78,8 +80,34 @@ def auth():
         return dumps(False)
     
 
+# When adding a job, send a json object with "Username" and "Job", capitalized
+@app.route('/createjob', methods = ['POST'])
+
+def addjob():
+
+    global n
+
+    d = request.get_json()
+    username = d['Username']
+    j = d['Job']
+
+    hail.update_one(
+        {"Username":username},
+        {
+            '$push': {'jobID': n}
+        }
+    )
+
+    job.insert_one(
+        {
+            "jobID":n,
+            "jobcontent":j
+        }
+    )
     
-    # return dumps(temp)
+    n += 1
+    return dumps(j)
+
 
 
 @app.errorhandler(500)
