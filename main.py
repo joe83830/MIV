@@ -15,6 +15,7 @@ MONGODB_URI = 'mongodb://test:test@ds119446.mlab.com:19446/joesecretcloset'
 client = MongoClient(MONGODB_URI, connectTimeoutMS=30000)
 db = client.joesecretcloset
 hail = db.Hailers
+drive = db.Drivers
 
     # Magical annotations define URL routing via the Flask application
 
@@ -22,12 +23,11 @@ hail = db.Hailers
 def home_page():
         # online_users = mongo.db.user.find({'Name': 'Joe'})
         # docs = list(online_users)
+
     temp = []
-    for data in hail.find():
-        temp.append(data)
-    
-        
-    output = hail.find({"Name" : "Joe"})
+    cursor = hail.find()
+    for doc in cursor:
+        temp.append(doc)
         
     return dumps(temp)
 
@@ -50,12 +50,36 @@ def checknum():
 
 
 @app.route('/add', methods = ['POST'])
+
 def addrec():
 
     d = request.get_json()
     hail.insert_one(d)
     
     return dumps(0)
+
+@app.route('/checkpasswd', methods = ['POST'])
+
+def auth():
+
+    tempdict = {}
+    d = request.get_json()
+    username = d['Username']
+    password = d['Password']
+    
+    cursor = hail.find({"username":username})
+
+    for doc in cursor:
+        tempdict = doc
+    if tempdict["password"] == password:
+
+        return dumps(True)
+    else:
+        return dumps(False)
+    
+
+    
+    # return dumps(temp)
 
 
 @app.errorhandler(500)
