@@ -6,6 +6,7 @@ import pymongo
 from bson.json_util import dumps
 import json
 from pymongo import MongoClient
+import math
 # from flask_pymongo import PyMongo
 
 
@@ -64,7 +65,7 @@ def addrec():
 
 def auth():
 
-    tempdict = {}
+    # tempdict = {}
     d = request.get_json()
     username = d['Username']
     password = d['Password']
@@ -73,7 +74,8 @@ def auth():
 
     for doc in cursor:
         tempdict = doc
-    if tempdict["password"] == password:
+
+    if tempdict["Password"] == password:
 
         return dumps(True)
     else:
@@ -81,6 +83,12 @@ def auth():
     
 
 # When adding a job, send a json object with "Username" and "Job", capitalized
+# {"Username": "new",
+# "Description": "Piano",
+# "Size": "Medium",
+# "From": [0, 0],
+# "To": [100, 100]
+# }
 @app.route('/createjob', methods = ['POST'])
 
 def addjob():
@@ -89,7 +97,10 @@ def addjob():
 
     d = request.get_json()
     username = d['Username']
-    j = d['Job']
+    j = d['Description']
+    size = d['Size']
+    f = d['From']
+    t = d['To']
 
     hail.update_one(
         {"Username":username},
@@ -101,13 +112,56 @@ def addjob():
     job.insert_one(
         {
             "jobID":n,
-            "jobcontent":j
+            "jobcontent":j,
+            "trucksize": size,
+            "from": f,
+            "to": t
         }
     )
-    
     n += 1
-    return dumps(j)
 
+    closest = findclosest(f, username)
+    
+    return dumps(closest)
+
+
+def findclosest(f, username):
+
+    cursor = drive.find()
+    tempdict = {}
+
+    for doc in cursor:
+        
+        tempdict[doc['Name']] = []
+        tempdict[doc['Name']].append(doc['Location'])
+
+    for val in tempdict.values():
+        val.append(caldist(val[0],f))
+    
+    l = sorted(tempdict, key=lambda k: tempdict[k][1])
+    
+
+    # Before Adding the 4 drivers, add the user pic first
+
+    cursor_user = hail.find({"Username":username})
+    p = {}
+    for profile in cursor_user:
+        p = profile
+
+
+    result = []
+    result.append(p['Pic'])
+
+    for i in range(4):
+        tempdrive = drive.find({"Name":l[i]})
+        result.append(tempdrive)
+
+    return result
+
+
+def caldist(driverloc, jobloc):
+    
+    return math.sqrt(((driverloc[0] - jobloc[0]) ** 2) + ((driverloc[1] - jobloc[1]) ** 2))
 
 
 @app.errorhandler(500)
