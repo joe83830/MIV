@@ -52,8 +52,8 @@ jobs:
 
   deploy:
     # working_directory: /
-    docker:
-      - image: google/cloud-sdk
+    # docker:
+    #   - image: google/cloud-sdk
     steps:
       - run:
           name: Deploy to GAE
