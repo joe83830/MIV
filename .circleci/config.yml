@@ -55,7 +55,7 @@ jobs:
 
   deploy:
 
-    working_directory: /tmp/my-project 
+    working_directory: /tmp/MIV
     docker:
       - image: google/cloud-sdk
     steps:
