@@ -43,8 +43,8 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-  test:
-    steps:
+  # test:
+  #   steps:
       - run:
           command: |
             . venv/bin/activate
@@ -70,12 +70,12 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
+      # - test:
+      #     requires:
+      #       - build
       - deploy:
           requires:
-            - test
+            - build
           filters:
             branches:
               only: master
