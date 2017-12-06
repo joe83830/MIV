@@ -43,4 +43,4 @@ deployment:
         # deploy to AppEngine
         - gcloud -q app deploy app.yaml --promote --version=staging
         # Run our E2E Test
-        - python e2e_test.py
+        # - python e2e_test.py
