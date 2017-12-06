@@ -50,12 +50,6 @@ jobs:
           command: |
             . venv/bin/activate
             pwd
-            ls
-            # for entry in "$search_dir"/*
-            # do
-            #   echo "$entry"
-            # done
-
             python test.py
 
 
@@ -75,6 +69,13 @@ jobs:
             do
               echo "$entry"
             done
+
+            if [ -e x.txt ]
+            then
+                echo "ok"
+            else
+                echo "nok"
+            fi
 
             echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
