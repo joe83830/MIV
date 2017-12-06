@@ -13,7 +13,7 @@ jobs:
         environment: 
             TEST_DATABASE_URL: mongodb://test:test@ds119446.mlab.com:19446/circlecitest
       - image: circleci/mongo:3.4     
-      - image: google/cloud-sdk 
+
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -52,6 +52,12 @@ jobs:
             python test.py
 
 
+
+  deploy:
+    # working_directory: /
+    # docker:
+    #   - image: google/cloud-sdk
+    steps:
       - run:
           name: Deploy to GAE
           command: |
@@ -66,25 +72,6 @@ jobs:
             
             gcloud -q app deploy app.yaml --promote --version=staging
 
-  # deploy:
-  #   # working_directory: /
-  #   # docker:
-  #   #   - image: google/cloud-sdk
-  #   steps:
-  #     - run:
-  #         name: Deploy to GAE
-  #         command: |
-  #           echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
-  #           export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
-  #           # /opt/google-cloud-sdk/bin/
-  #           # gcloud --quiet components update
-  #           # /opt/google-cloud-sdk/bin/
-  #           gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
-  #           # /opt/google-cloud-sdk/bin/
-  #           gcloud config set project jslpskel
-            
-  #           gcloud -q app deploy app.yaml --promote --version=staging
-
 
 workflows:
   version: 2
@@ -95,14 +82,12 @@ workflows:
       #     requires:
       #       - build
 
-
-
-      # - deploy:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
 
 
 
