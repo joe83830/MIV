@@ -66,7 +66,7 @@ jobs:
             gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
             # /opt/google-cloud-sdk/bin/
             gcloud config set project jslpskel
-            gcloud -q app deploy app.yaml --promote --version=staging
+            gcloud -q app deploy --promote --version=staging
 
 workflows:
   version: 2
