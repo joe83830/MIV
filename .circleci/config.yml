@@ -42,12 +42,43 @@ jobs:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
-        
+
+  test:
+    steps:
       - run:
           command: |
             . venv/bin/activate
             python test.py
 
+  deploy:
+    working_directory: /
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - run:
+          name: Deploy to GAE
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
+            sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
+            sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+            sudo /opt/google-cloud-sdk/bin/gcloud config set project $jslpskel
+            gcloud -q app deploy app.yaml --promote --version=staging
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
      # - store_artifacts:
       #    path: test-reports
        #   destination: test-reports   
