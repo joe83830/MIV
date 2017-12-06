@@ -40,13 +40,6 @@ jobs:
             pip install -r requirements.txt
 
 
-            if [ -e app.yaml ]
-            then
-                echo "ok"
-            else
-                echo "nok"
-            fi
-
       - save_cache:
           paths:
             - ./venv
@@ -64,7 +57,7 @@ jobs:
 
   deploy:
 
-    working_directory: /
+    # working_directory: /
     docker:
       - image: google/cloud-sdk
     steps:
