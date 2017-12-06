@@ -62,6 +62,7 @@ jobs:
       - run:
           name: Deploy to GAE
           command: |
+            . venv/bin/activate
             echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
             # /opt/google-cloud-sdk/bin/
