@@ -49,6 +49,13 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
+            pwd
+            
+            for entry in "$search_dir"/*
+            do
+              echo "$entry"
+            done
+            
             python test.py
 
 
@@ -63,10 +70,12 @@ jobs:
           name: Deploy to GAE
           command: |
             pwd
+
             for entry in "$search_dir"/*
             do
               echo "$entry"
             done
+
             echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
             # /opt/google-cloud-sdk/bin/
