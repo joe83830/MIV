@@ -49,7 +49,12 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            pwd
+            if [ -e app.yaml ]
+            then
+                echo "ok"
+            else
+                echo "nok"
+            fi
             python test.py
 
 
@@ -70,7 +75,7 @@ jobs:
               echo "$entry"
             done
 
-            if [ -e x.txt ]
+            if [ -e app.yaml ]
             then
                 echo "ok"
             else
