@@ -39,6 +39,14 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
 
+
+            if [ -e app.yaml ]
+            then
+                echo "ok"
+            else
+                echo "nok"
+            fi
+
       - save_cache:
           paths:
             - ./venv
@@ -49,12 +57,7 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            if [ -e app.yaml ]
-            then
-                echo "ok"
-            else
-                echo "nok"
-            fi
+
             python test.py
 
 
