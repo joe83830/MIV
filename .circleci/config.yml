@@ -12,7 +12,8 @@ jobs:
       - image: circleci/python:3.6.1
         environment: 
             TEST_DATABASE_URL: mongodb://test:test@ds119446.mlab.com:19446/circlecitest
-      - image: circleci/mongo:3.4      
+      - image: circleci/mongo:3.4     
+      - image: google/cloud-sdk 
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -94,7 +95,7 @@ workflows:
       #     requires:
       #       - build
 
-      
+
 
       # - deploy:
       #     requires:
