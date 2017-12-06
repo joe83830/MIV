@@ -55,7 +55,7 @@ jobs:
 
   deploy:
 
-    working_directory: /home/circleci/MIV
+    # working_directory: /home/circleci/MIV
     docker:
       - image: google/cloud-sdk
     steps:
