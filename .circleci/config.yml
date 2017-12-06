@@ -61,7 +61,7 @@ jobs:
             echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
             # /opt/google-cloud-sdk/bin/
-            gcloud --quiet components update
+            # gcloud --quiet components update
             # /opt/google-cloud-sdk/bin/
             gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
             # /opt/google-cloud-sdk/bin/
