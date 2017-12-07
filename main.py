@@ -7,11 +7,14 @@ from bson.json_util import dumps
 import json
 from pymongo import MongoClient
 import math
+from flasgger import Swagger
 # from flask_pymongo import PyMongo
 
 
 # This defines a Flask application
 app = Flask(__name__)
+swagger = Swagger(app)
+
 MONGODB_URI = 'mongodb://test:test@ds119446.mlab.com:19446/joesecretcloset'
 client = MongoClient(MONGODB_URI, connectTimeoutMS=30000)
 db = client.joesecretcloset
@@ -33,6 +36,14 @@ else:
 @app.route('/')
 def home_page():
 
+    """
+    Returns list of current users.
+    ---
+    responses:
+      200:
+        description: Success.
+        
+    """
     temp = []
     cursor = hail.find()
     for doc in cursor:
@@ -53,6 +64,29 @@ def checknum():
 
 def addrec():
 
+    """
+    Register a user.
+    ---
+    parameters:
+      - in: body
+        name: body
+        schema:
+          id: alert
+          properties:
+            Username:
+              type: string
+            Password:
+              type: string
+
+    produces:
+      application/json
+    responses:
+      200:
+        description: Success
+        # schema:
+        #   $ref: '#/definitions/index_post_alert'
+    """
+
     d = request.get_json()
     d['jobID'] = []
     hail.insert_one(d)
@@ -64,7 +98,28 @@ def addrec():
 @app.route('/checkpasswd', methods = ['POST'])
 
 def auth():
+    """
+    Check password.
+    ---
+    parameters:
+      - in: body
+        name: body2
+        schema:
+          id: pass
+          properties:
+            Username:
+              type: string
+            Password:
+              type: string
 
+    produces:
+      application/json
+    responses:
+      200:
+        description: True or False
+        # schema:
+        #   $ref: '#/definitions/index_post_alert'
+    """
     # tempdict = {}
     d = request.get_json()
     username = d['Username']
@@ -93,7 +148,60 @@ def auth():
 
 def addjob():
 
+    """
+    Create job.
+    ---
+    parameters:
+      - in: body
+        name: createjob
+        schema:
+          id: job
+          properties:
+
+            Username:
+              type: string
+            From:
+              type: array
+              items:
+                type: double
+            To:
+              type: array
+              items:
+                type: double
+            Description:
+              type: string
+            Size:
+              type: string
+            
+
+    produces:
+      application/json
+
+
+
+    responses:
+        '200':
+          description: A User object
+          content:
+            application/json:
+              in: body
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The user ID.
+
+    """
+
     global n
+
+    if job.count() == 0:
+        n = 0
+
+    else:
+        cur = job.find_one(sort=[("jobID", -1)])
+        n = cur['jobID'] + 1
 
     d = request.get_json()
     username = d['Username']
